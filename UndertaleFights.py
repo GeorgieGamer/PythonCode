@@ -24,17 +24,45 @@ CharaButtonRect = Rect(135, 200, 130, 60, fill= 'black', border= 'white', border
 CharaButtonLabel = Label('Chara', CharaButtonRect.centerX, 
 CharaButtonRect.centerY, size= 30, fill='white', bold=True)
 
+DifficultyButtonRect = Rect(135, 300, 130, 60, fill= 'black', border= 'white', borderWidth=3)
+DifficultyButtonLabel = Label('Difficulty', DifficultyButtonRect.centerX, 
+DifficultyButtonRect.centerY, size= 27.5, fill='white', bold=True)
+
+DifficultiesLabel = Label('Difficulties', 200, 50, fill='white', size= 40, bold=True)
+EasyButtonRect = Rect(135, 100, 130, 60, fill= 'black', border= 'white', borderWidth=3)
+EasyButtonLabel = Label('Easy', EasyButtonRect.centerX, 
+EasyButtonRect.centerY, size= 30, fill='white', bold=True)
+
+MediumButtonRect = Rect(135, 200, 130, 60, fill= 'black', border= 'white', borderWidth=3)
+MediumButtonLabel = Label('Medium', MediumButtonRect.centerX, 
+MediumButtonRect.centerY, size= 30, fill='white', bold=True)
+
+HardButtonRect = Rect(135, 300, 130, 60, fill= 'black', border= 'white', borderWidth=3)
+HardButtonLabel = Label('Hard', HardButtonRect.centerX, 
+HardButtonRect.centerY, size= 27.5, fill='white', bold=True)
+
 app.Character = None
+app.Difficulty = None
+
+MousePressCount = Label(0, 300, 50, visible= False)
 
 SelectionScreen = Group(UndertaleFightsLabel, UndyneButtonRect, UndyneButtonLabel,
-                        CharaButtonRect, CharaButtonLabel)
+                        CharaButtonRect, CharaButtonLabel, DifficultyButtonRect, 
+                        DifficultyButtonLabel)
 
-Knife = Group(Rect(50, 350, 5, 10, fill='red', border='darkRed'),
-                Arc(50, 350, 20, 75, 0, 90, fill='red', border='darkRed')  
+DifficultyScreen= Group(DifficultiesLabel, EasyButtonRect, EasyButtonLabel,
+                        MediumButtonRect, MediumButtonLabel, HardButtonRect,
+                        HardButtonLabel)     
+
+DifficultyScreen.visible= False    
+
+Knife = Group(Rect(20, 50, 5, 10, fill='red', border='darkRed'),
+                Arc(20, 50, 20, 75, 0, 90, fill='red', border='darkRed')  
                 )
 
 Knife.visible= False  
 Knife.speed= 5  
+
 '''
 for i in range (5):
     GreenLine1 = Line(100*i, 0, 100*i, 400, fill='limeGreen')
@@ -49,7 +77,7 @@ Undyne.width= Undyne.width/1.5
 Undyne.height = Undyne.height/1.5
 Undyne.visible = False
 
-Chara = Image('https://i.ytimg.com/vi/qE2Ng3-yKjk/hqdefault.jpg', 80, -20)
+Chara = Image('https://i.ytimg.com/vi/qE2Ng3-yKjk/hqdefault.jpg', 80, -10)
 Chara.width= Chara.width/2
 Chara.height= Chara.height/2
 Chara.visible = False
@@ -132,13 +160,65 @@ def onMouseMove(mouseX,mouseY):
         CharaButtonRect.border = 'white'
         CharaButtonLabel.fill= 'white'  
 
+    if DifficultyButtonRect.hits(mouseX, mouseY) or DifficultyButtonLabel.hits(mouseX, mouseY):
+        DifficultyButtonRect.border = 'yellow'
+        DifficultyButtonLabel.fill= 'yellow'
+        
+    if DifficultyButtonRect.hits(mouseX, mouseY) == False:
+        DifficultyButtonRect.border = 'white'
+        DifficultyButtonLabel.fill= 'white'   
+    
+    if EasyButtonRect.hits(mouseX, mouseY) or EasyButtonLabel.hits(mouseX, mouseY):
+        EasyButtonRect.border = 'yellow'
+        EasyButtonLabel.fill= 'yellow'
+    
+    if EasyButtonRect.hits(mouseX, mouseY) == False:
+        EasyButtonRect.border = 'white'
+        EasyButtonLabel.fill= 'white' 
+    
+    if MediumButtonRect.hits(mouseX, mouseY) or MediumButtonLabel.hits(mouseX, mouseY):
+        MediumButtonRect.border = 'yellow'
+        MediumButtonLabel.fill= 'yellow'
+    
+    if MediumButtonRect.hits(mouseX, mouseY) == False:
+        MediumButtonRect.border = 'white'
+        MediumButtonLabel.fill= 'white' 
+    
+    if HardButtonRect.hits(mouseX, mouseY) or EasyButtonLabel.hits(mouseX, mouseY):
+        HardButtonRect.border = 'yellow'
+        HardButtonLabel.fill= 'yellow'
+    
+    if HardButtonRect.hits(mouseX, mouseY) == False:
+        HardButtonRect.border = 'white'
+        HardButtonLabel.fill= 'white'       
+
 def onMousePress(mouseX,mouseY):
     if UndyneButtonRect.hits(mouseX, mouseY):
         app.Character = 'Undyne'
     if CharaButtonRect.hits(mouseX, mouseY):
         app.Character = 'Chara'
     if UndyneButtonRect.hits(mouseX, mouseY) or CharaButtonRect.hits(mouseX, mouseY):
-        SelectionScreen.visible= False    
+        SelectionScreen.visible= False 
+        DifficultyScreen.visible=False
+    if DifficultyButtonRect.hits(mouseX,mouseY):
+        DifficultyScreen.visible= True
+        MousePressCount.value+=1
+
+    if UndyneButtonRect.hits(mouseX, mouseY) or CharaButtonRect.hits(mouseX, mouseY) or DifficultyButtonRect.hits(mouseX,mouseY):
+        SelectionScreen.visible= False
+        
+    if EasyButtonRect.visible==True and EasyButtonRect.hits(mouseX,mouseY):
+        app.Difficulty = 'Easy'
+        
+    if MediumButtonRect.visible==True and MediumButtonRect.hits(mouseX,mouseY):
+        app.Difficulty = 'Medium'    
+    
+    if HardButtonRect.visible==True and HardButtonRect.hits(mouseX,mouseY) and MousePressCount.value>=2:
+        app.Difficulty = 'Hard'   
+
+    if app.Difficulty != None:
+        DifficultyScreen.visible=False
+        SelectionScreen.visible=True               
 
 
 
@@ -155,8 +235,14 @@ def spawn():
         Spear.centerY= Y
         Spear.rotateAngle= rotateAngle
         #SpearSoundEffect.play()
-        if Spear.speed<20:
+        if Spear.speed<20 and app.Difficulty=='Easy':
+            Spear.speed+=0.1
+
+        if Spear.speed<20 and app.Difficulty=='Medium':
             Spear.speed+=0.5
+
+        if Spear.speed<25 and app.Difficulty=='Hard':
+            Spear.speed+=1 
         
         Spear.rotateAngle = angleTo(Spear.centerX, Spear.centerY, Player.centerX, Player.centerY)
 
@@ -169,11 +255,19 @@ def spawn():
         Knife.centerX= X
         Knife.centerY= Y
         Knife.rotateAngle= rotateAngle
+    
         #SpearSoundEffect.play()
-        if Knife.speed<20:
+
+        if Knife.speed<15 and app.Difficulty=='Easy':
+            Knife.speed+=0.1
+
+        if Knife.speed<20 and app.Difficulty=='Medium':
             Knife.speed+=0.5
+
+        if Knife.speed<25 and app.Difficulty=='Hard':
+            Knife.speed+=1        
         
-        Knife.rotateAngle = angleTo(Knife.centerX, Knife.centerY, Knife.centerX, Knife.centerY)
+        Knife.rotateAngle = angleTo(Knife.centerX, Knife.centerY, Player.centerX, Player.centerY)
 
 GameOverScreen = Group(
                 Rect(0, 0, 400, 400, fill='black'),
@@ -186,14 +280,16 @@ GameOverScreen.visible = False
 
 def onStep():
                 
-    if SelectionScreen.visible==False:
+    if SelectionScreen.visible==False and GameOverScreen.visible==False and DifficultyScreen.visible==False:
         PointCounter.value+=10
         spawn()  
-        GameScreen.visible=True
+        GameScreen.visible=True    
     
     if timer1.value < 0:
         Spear.visible=False
-    Spear.toFront()    
+        Knife.visible=False
+    Spear.toFront()  
+    Knife.toFront()  
     
     if Spear.visible:
         Spear.centerX, Spear.centerY = getPointInDir(Spear.centerX, Spear.centerY, Spear.rotateAngle, Spear.speed)
@@ -210,7 +306,7 @@ def onStep():
         Knife.visible=False
     if Knife.hitsShape(Player) and HpBar.width>1:
         HpBar.width-=1
-        HpCounter.value-=1    
+        HpCounter.value-=1      
         
     if (Spear.hitsShape(Player) or Knife.hitsShape(Player)) and HpBar.width==1:
         HpBar.visible=False
